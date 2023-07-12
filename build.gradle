@@ -1,0 +1,141 @@
+//apply plugin: 'java-library'
+//apply plugin: 'docker'
+//
+//buildscript {
+//    repositories {
+//        mavenLocal()
+//        maven {
+//            credentials {
+//                username = "repouser"
+//                password = "5fPtTY7OAaUd"
+//            }
+//            url "https://nqa-nexus.sprinklr.com/nexus/content/repositories/public/"
+//        }
+//        maven {
+//            credentials {
+//                username = 'repouser'
+//                password = '5fPtTY7OAaUd'
+//            }
+//            url "https://nqa-nexus.sprinklr.com/nexus/content/repositories/thirdparty/"
+//        }
+//        mavenCentral()
+//        maven {
+//            url "https://clojars.org/repo/"
+//        }
+//    }
+//    dependencies {
+//        classpath 'com.spr.se.transmode.gradle:gradle-docker:1.2-3'
+//    }
+//}
+
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+group = 'com.kafkaloginfluxconnector'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.9'
+    implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
+    implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.0.0'
+    implementation group: 'com.influxdb', name: 'influxdb-client-java', version: '6.7.0'
+    implementation group: 'org.apache.kafka', name: 'kafka-clients', version: '3.4.1'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    implementation group: 'org.influxdb', name: 'influxdb-java', version: '2.23'
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'ch.qos.logback:logback-classic:1.2.6'
+    implementation group: 'biz.paluch.logging', name: 'logstash-gelf', version: '1.14.0'
+//    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
+//    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
+//    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.7'
+}
+
+//configurations {
+//    api.exclude group: 'org.glassfish.hk2.external', module: 'bean-validator'
+//}
+//
+//docker {
+//    baseImage = 'openjdk:8'
+//}
+//
+//task core(type: Zip) {
+//    dependsOn jar
+//    from('bin') {
+//        fileMode 0755
+//        into('bin')
+//    }
+//    from('resources')
+//    from(configurations.runtimeClasspath) {
+//        exclude('jsp-api-2.1.jar')
+//        into('lib')
+//    }
+//    from(jar.archivePath) {
+//        into('lib')
+//    }
+//    destinationDirectory = file(buildDir.absolutePath + '/libs')
+//}
+//
+//build.dependsOn core
+//
+//task core_tar(type: Tar) {
+//    dependsOn jar
+//    from('bin') {
+//        fileMode 0755
+//        into('bin')
+//    }
+//    from(configurations.runtimeClasspath) {
+//        exclude('jsp-api-2.1.jar')
+//        into('libs')
+//    }
+//    from(jar.archivePath) {
+//        into('libs')
+//    }
+//    from(sourceSets.main.resources.srcDirs) {
+//        into('conf')
+//        include 'logback-docker.xml'
+//        include 'spr-app-info.properties'
+//        rename('logback-docker.xml', 'logback.xml')
+//    }
+//    destinationDirectory = file(buildDir.absolutePath + '/libs')
+//}
+//
+//
+//task dockerfile(type: Docker) {
+//    dependsOn core_tar
+//    applicationName 'api'
+//    tagVersion "1.0"
+//    addInstruction("USER", "root")
+//    runCommand 'mkdir -p /mnt1/config'
+////    runCommand  'chown -R sprinternal. /mnt1/config'
+//    runCommand 'mkdir -p /mnt1/tmp'
+////    runCommand 'chown -R sprinternal. /mnt1/tmp'
+//    addFile(buildDir.absolutePath + '/libs/kafka-log-influx-connector-1.0-SNAPSHOT.tar', "/mnt1/kafka-app")
+////    addInstruction("USER", "sprinternal")
+//    entryPoint(['/mnt1/kafka-app/bin/start.sh'])
+//    exposePort 8080
+//}
+
+shadowJar {
+    archiveFileName = "kafka-log-influx-connector.jar"
+    manifest {
+        attributes 'Main-Class': 'com.kafkaloginfluxconnector.Main'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
